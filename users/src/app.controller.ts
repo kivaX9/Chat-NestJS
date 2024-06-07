@@ -4,6 +4,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices'
 import { AppService } from './app.service'
 
 import RegisterUserDTO from './dtos/RegisterUser.dto'
+import LoginUserDTO from './dtos/LoginUser.dto'
 
 @Controller()
 export class AppController {
@@ -21,7 +22,7 @@ export class AppController {
   }
 
   @MessagePattern({ cmd: 'LOGIN_USER' })
-  loginUser(@Payload() registerUserDto: RegisterUserDTO) {
-    return this.appService.registerUser(registerUserDto)
+  loginUser(@Payload() loginUserDto: LoginUserDTO) {
+    return this.appService.loginUser(loginUserDto)
   }
 }

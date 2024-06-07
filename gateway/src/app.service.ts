@@ -1,24 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 
-import * as bcrypt from 'bcrypt'
-
 import RegisterUserDTO from './dtos/RegisterUser.dto'
+import LoginUserDTO from './dtos/LoginUser.dto'
 
 @Injectable()
 export class AppService {
   constructor(@Inject('CHAT-USERS') private readonly ChatUsers: ClientProxy) {}
 
-  async registerUser(registerUserDto: RegisterUserDTO) {
-    const { password } = registerUserDto
+  getUser(id: number) {
+    return this.ChatUsers.send({ cmd: 'GET_USER' }, id)
+  }
 
-    // Хеширование пароля
-    const saltOrRounds = 10
-    const hash = await bcrypt.hash(password, saltOrRounds)
+  registerUser(registerUserDto: RegisterUserDTO) {
+    return this.ChatUsers.send({ cmd: 'REGISTER_USER' }, registerUserDto)
+  }
 
-    return this.ChatUsers.send(
-      { cmd: 'REGISTER_USER' },
-      { ...registerUserDto, password: hash },
-    )
+  loginUser(loginUserDto: LoginUserDTO) {
+    return this.ChatUsers.send({ cmd: 'LOGIN_USER' }, loginUserDto)
   }
 }
