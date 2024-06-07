@@ -2,7 +2,7 @@ import { type DynamicModule } from '@nestjs/common'
 
 import { ClientsModule, Transport } from '@nestjs/microservices'
 
-export const ClientsModules: DynamicModule = ClientsModule.register([
+export const UsersMicroservices: DynamicModule = ClientsModule.register([
   {
     name: 'CHAT-USERS',
     transport: Transport.TCP,

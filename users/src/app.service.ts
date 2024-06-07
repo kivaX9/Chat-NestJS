@@ -68,7 +68,7 @@ export class AppService {
     const { password: passwordHash } = user
     const isComparePassword = await bcrypt.compare(password, passwordHash)
     if (!isComparePassword) {
-      throw new UnauthorizedException()
+      return new UnauthorizedException()
     }
 
     // Генерация токена

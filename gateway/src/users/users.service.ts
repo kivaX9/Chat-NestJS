@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 
-import RegisterUserDTO from './dtos/RegisterUser.dto'
-import LoginUserDTO from './dtos/LoginUser.dto'
+import LoginUserDTO from 'src/users/dtos/LoginUser.dto'
+import RegisterUserDTO from 'src/users/dtos/RegisterUser.dto'
 
 @Injectable()
-export class AppService {
+export class UsersService {
   constructor(@Inject('CHAT-USERS') private readonly ChatUsers: ClientProxy) {}
 
   getUser(id: number) {

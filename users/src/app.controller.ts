@@ -22,6 +22,7 @@ export class AppController {
   }
 
   @MessagePattern({ cmd: 'LOGIN_USER' })
+  @UsePipes(new ValidationPipe())
   loginUser(@Payload() loginUserDto: LoginUserDTO) {
     return this.appService.loginUser(loginUserDto)
   }
