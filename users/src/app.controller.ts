@@ -1,13 +1,27 @@
-import { Controller } from '@nestjs/common'
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common'
+import { MessagePattern, Payload } from '@nestjs/microservices'
+
 import { AppService } from './app.service'
-import { MessagePattern } from '@nestjs/microservices'
+
+import RegisterUserDTO from './dtos/RegisterUser.dto'
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern({ cmd: 'string' })
-  createString(value: { value: string }) {
-    return this.appService.createString(value)
+  @MessagePattern({ cmd: 'GET_USER' })
+  getUser(@Payload() id: number) {
+    return this.appService.getUser(id)
+  }
+
+  @MessagePattern({ cmd: 'REGISTER_USER' })
+  @UsePipes(new ValidationPipe())
+  registerUser(@Payload() registerUserDto: RegisterUserDTO) {
+    return this.appService.registerUser(registerUserDto)
+  }
+
+  @MessagePattern({ cmd: 'LOGIN_USER' })
+  loginUser(@Payload() registerUserDto: RegisterUserDTO) {
+    return this.appService.registerUser(registerUserDto)
   }
 }

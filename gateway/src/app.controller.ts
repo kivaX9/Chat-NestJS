@@ -1,12 +1,15 @@
 import { Body, Controller, Post } from '@nestjs/common'
+
 import { AppService } from './app.service'
+
+import RegisterUserDTO from './dtos/RegisterUser.dto'
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Post()
-  createString(@Body() value: { value: string }) {
-    return this.appService.createString(value)
+  @Post('register')
+  registerUser(@Body() registerUserDto: RegisterUserDTO) {
+    return this.appService.registerUser(registerUserDto)
   }
 }
