@@ -8,7 +8,7 @@ export const ConnectionJwt: DynamicModule = JwtModule.registerAsync({
   useFactory: (configService: ConfigService) => ({
     secret: configService.get<string>('JWT_SECRET'),
     signOptions: {
-      expiresIn: configService.get<number>('ACCESS_TOKEN_EXPIRES'),
+      expiresIn: configService.get<string>('ACCESS_TOKEN_EXPIRES'),
     },
   }),
 })

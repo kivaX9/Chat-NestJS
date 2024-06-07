@@ -75,7 +75,7 @@ export class AppService {
     const { id } = user
     const payload = { sub: id, username }
     const token = await this.jwtService.signAsync(payload, {
-      expiresIn: this.configService.get<number>('ACCESS_TOKEN_EXPIRES'),
+      expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES'),
     })
 
     // Ответ
