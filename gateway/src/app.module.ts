@@ -1,14 +1,15 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
-import { UsersModule } from './users/users.module'
+import { UsersModule } from './modules/users/users.module'
+import { CommentsModule } from './modules/comments/comments.module'
 
 import { TokenMiddleware } from './middlewares/tokenMiddleware'
 
 import { ConnectionConfig } from './utils/AppModules/ConnectionConfig'
 
 @Module({
-  imports: [UsersModule, ConnectionConfig],
+  imports: [ConnectionConfig, UsersModule, CommentsModule],
   providers: [JwtService],
 })
 export class AppModule {
