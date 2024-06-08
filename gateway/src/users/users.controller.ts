@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-} from '@nestjs/common'
+import { Body, Controller, Get, Post, Req } from '@nestjs/common'
 
 import { UsersService } from './users.service'
 
@@ -16,9 +9,10 @@ import RegisterUserDTO from 'src/users/dtos/RegisterUser.dto'
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get(':id')
-  getUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getUser(id)
+  @Get('current')
+  getCurrentUser(@Req() request: Request) {
+    const jwtPayload = request['user']
+    return this.usersService.getCurrentUser(jwtPayload)
   }
 
   @Post('register')

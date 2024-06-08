@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { JwtService } from '@nestjs/jwt'
+import { ConfigService } from '@nestjs/config'
 
 import * as bcrypt from 'bcrypt'
 
@@ -15,7 +16,6 @@ import { Repository } from 'typeorm'
 
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
-import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class AppService {
@@ -24,12 +24,6 @@ export class AppService {
     @Inject(JwtService) private jwtService: JwtService,
     @Inject(ConfigService) private configService: ConfigService,
   ) {}
-
-  async getUser(id: number) {
-    // Найти user по id
-    const user = await this.userRepository.findOneBy({ id })
-    return { ...user, password: undefined }
-  }
 
   async registerUser(registerUserDto: RegisterUserDTO) {
     const { username, password, email } = registerUserDto
@@ -65,15 +59,14 @@ export class AppService {
     const user = await this.userRepository.findOneBy({ username })
 
     // Проверка пароля
-    const { password: passwordHash } = user
+    const { password: passwordHash, ...userWithoutPassword } = user
     const isComparePassword = await bcrypt.compare(password, passwordHash)
     if (!isComparePassword) {
       return new UnauthorizedException()
     }
 
     // Генерация токена
-    const { id } = user
-    const payload = { sub: id, username }
+    const payload = { sub: user.id, user: userWithoutPassword }
     const token = await this.jwtService.signAsync(payload, {
       expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES'),
     })

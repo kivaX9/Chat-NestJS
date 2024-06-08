@@ -10,11 +10,6 @@ import LoginUserDTO from './dtos/LoginUser.dto'
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern({ cmd: 'GET_USER' })
-  getUser(@Payload() id: number) {
-    return this.appService.getUser(id)
-  }
-
   @MessagePattern({ cmd: 'REGISTER_USER' })
   @UsePipes(new ValidationPipe())
   registerUser(@Payload() registerUserDto: RegisterUserDTO) {
