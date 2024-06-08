@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common'
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
@@ -13,6 +7,8 @@ import * as bcrypt from 'bcrypt'
 
 import { User } from './typeorm/entities/User.entity'
 import { Repository } from 'typeorm'
+
+import CreateResponse from './utils/CreateResponse'
 
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
@@ -23,6 +19,7 @@ export class AppService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @Inject(JwtService) private jwtService: JwtService,
     @Inject(ConfigService) private configService: ConfigService,
+    private createResponse: CreateResponse,
   ) {}
 
   async registerUser(registerUserDto: RegisterUserDTO) {
@@ -32,9 +29,7 @@ export class AppService {
     const existingUser = await this.userRepository.findOne({
       where: [{ username }, { email }],
     })
-    if (existingUser) {
-      return new HttpException('Such a user exists', HttpStatus.BAD_REQUEST)
-    }
+    if (existingUser) this.createResponse.badRequest('Such a user exists')
 
     // Хеширование пароля
     const saltOrRounds = 10
@@ -51,7 +46,7 @@ export class AppService {
     const savedUser = await this.userRepository.save(newUser)
 
     // Ответ
-    if (savedUser) return new HttpException('User created', HttpStatus.CREATED)
+    if (savedUser) this.createResponse.create('User created')
   }
 
   async loginUser(loginUserDto: LoginUserDTO) {

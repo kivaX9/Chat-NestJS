@@ -2,8 +2,8 @@ import { Body, Controller, Get, Post, Req } from '@nestjs/common'
 
 import { UsersService } from './users.service'
 
-import LoginUserDTO from 'src/users/dtos/LoginUser.dto'
-import RegisterUserDTO from 'src/users/dtos/RegisterUser.dto'
+import RegisterUserDTO from './dtos/RegisterUser.dto'
+import LoginUserDTO from './dtos/LoginUser.dto'
 
 @Controller('users')
 export class UsersController {

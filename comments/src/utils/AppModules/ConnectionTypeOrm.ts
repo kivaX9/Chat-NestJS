@@ -3,8 +3,10 @@ import { type DynamicModule } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
+import { Comment } from 'src/typeorm/entities/Comment.entity'
+
 export const ConnectionTypeOrm: DynamicModule[] = [
-  TypeOrmModule.forFeature([]),
+  TypeOrmModule.forFeature([Comment]),
   TypeOrmModule.forRootAsync({
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => ({
