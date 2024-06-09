@@ -6,10 +6,11 @@ import { AppService } from './app.service'
 import { ConnectionJwt } from './utils/AppModules/ConnectionJwt'
 import { ConnectionConfig } from './utils/AppModules/ConnectionConfig'
 import { ConnectionTypeOrm } from './utils/AppModules/ConnectionTypeOrm'
+import CreateResponse from './utils/CreateResponse'
 
 @Module({
   imports: [ConnectionJwt, ConnectionConfig, ...ConnectionTypeOrm],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CreateResponse],
 })
 export class AppModule {}

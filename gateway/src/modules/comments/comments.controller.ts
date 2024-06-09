@@ -12,7 +12,7 @@ import {
 
 import { CommentsService } from './comments.service'
 
-@Controller('comments')
+@Controller('api/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 

@@ -5,7 +5,7 @@ import { UsersService } from './users.service'
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
 
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

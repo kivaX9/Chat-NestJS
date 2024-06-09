@@ -17,8 +17,8 @@ export class AppModule {
     consumer
       .apply(TokenMiddleware)
       .exclude(
-        { path: 'users/register', method: RequestMethod.POST },
-        { path: 'users/login', method: RequestMethod.POST },
+        { path: 'api/users/register', method: RequestMethod.POST },
+        { path: 'api/users/login', method: RequestMethod.POST },
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL })
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -7,13 +7,14 @@ import { Comment } from 'src/typeorm/entities/Comment.entity'
 
 import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
+
 import CreateResponse from './utils/CreateResponses'
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectRepository(Comment) private commentsRepository: Repository<Comment>,
-    private createResponse: CreateResponse,
+    @Inject(CreateResponse) private createResponse: CreateResponse,
   ) {}
 
   async getAllComments(userId: number) {
@@ -34,7 +35,7 @@ export class AppService {
     const savedComment = await this.commentsRepository.save(newComment)
 
     //  Ответ
-    if (savedComment) this.createResponse.create('Comment created')
+    if (savedComment) return this.createResponse.create('Comment created')
   }
 
   async updateComment(updateCommentDto: UpdateCommentDTO) {
@@ -44,7 +45,7 @@ export class AppService {
     const updateComment = await this.commentsRepository.update({ id }, { text })
 
     //  Ответ
-    if (updateComment) this.createResponse.ok('Comment update')
+    if (updateComment) return this.createResponse.ok('Comment update')
   }
 
   async deleteComment(id: number) {
@@ -52,6 +53,6 @@ export class AppService {
     const deleteComment = await this.commentsRepository.delete(id)
 
     //  Ответ
-    if (deleteComment) this.createResponse.ok('Comment delete')
+    if (deleteComment) return this.createResponse.ok('Comment delete')
   }
 }

@@ -4,10 +4,11 @@ import { AppService } from './app.service'
 
 import { ConnectionConfig } from './utils/AppModules/ConnectionConfig'
 import { ConnectionTypeOrm } from './utils/AppModules/ConnectionTypeOrm'
+import CreateResponse from './utils/CreateResponses'
 
 @Module({
   imports: [ConnectionConfig, ...ConnectionTypeOrm],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CreateResponse],
 })
 export class AppModule {}
