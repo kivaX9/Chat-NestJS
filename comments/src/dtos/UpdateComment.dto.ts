@@ -1,4 +1,4 @@
 export default class UpdateCommentDTO {
-  id: number
+  id: string
   text: string
 }

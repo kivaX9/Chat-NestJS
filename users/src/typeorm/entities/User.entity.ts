@@ -1,9 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm'
+import { v4 as uuidv4 } from 'uuid'
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number
+  @PrimaryColumn()
+  id: string
 
   @Column({ unique: true })
   username: string
@@ -13,4 +14,9 @@ export class User {
 
   @Column()
   password: string
+
+  @BeforeInsert()
+  generateId() {
+    this.id = uuidv4()
+  }
 }

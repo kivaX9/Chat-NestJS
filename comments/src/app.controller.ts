@@ -11,7 +11,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'GET_COMMENTS_USER' })
-  getAllComments(@Payload() userId: number) {
+  getAllComments(@Payload() userId: string) {
     return this.appService.getAllComments(userId)
   }
 

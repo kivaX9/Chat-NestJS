@@ -1,7 +1,6 @@
 import {
   Controller,
   Param,
-  ParseIntPipe,
   Body,
   Post,
   Get,
@@ -31,15 +30,12 @@ export class CommentsController {
   }
 
   @Put('update/:id')
-  updateComment(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() comment: { text: string },
-  ) {
+  updateComment(@Param('id') id: string, @Body() comment: { text: string }) {
     return this.commentsService.updateComment(id, comment.text)
   }
 
   @Delete('delete/:id')
-  deleteComment(@Param('id', ParseIntPipe) id: number) {
+  deleteComment(@Param('id') id: string) {
     return this.commentsService.deleteComment(id)
   }
 }

@@ -17,7 +17,7 @@ export class AppService {
     @Inject(CreateResponse) private createResponse: CreateResponse,
   ) {}
 
-  async getAllComments(userId: number) {
+  async getAllComments(userId: string) {
     // Получение всех комментариев user
     const comments = await this.commentsRepository.findBy({ userId })
 

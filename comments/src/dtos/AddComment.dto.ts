@@ -1,4 +1,4 @@
 export default class AddCommentDTO {
-  userId: number
+  userId: string
   text: string
 }

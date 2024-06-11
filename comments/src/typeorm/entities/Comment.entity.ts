@@ -1,13 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm'
+import { v4 as uuidv4 } from 'uuid'
 
 @Entity({ name: 'comments' })
 export class Comment {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number
+  @PrimaryColumn()
+  id: string
 
   @Column()
-  userId: number
+  userId: string
 
   @Column()
   text: string
+
+  @BeforeInsert()
+  generateId() {
+    this.id = uuidv4()
+  }
 }
