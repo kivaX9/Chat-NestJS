@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgreSQL
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  apps:
+    container_name: apps
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+      - "${USERS_PORT}:${USERS_PORT}"
+      - "${COMMENTS_PORT}:${COMMENTS_PORT}"
+    env_file:
+      - ./gateway/.env
+      - ./users/.env
+      - ./comments/.env
+    volumes:
+      - ./gateway/src:/app/gateway/src
+      - ./users/src:/app/users/src
+      - ./comments/src:/app/comments/src

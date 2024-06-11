@@ -10,7 +10,7 @@ export const ConnectionTypeOrm: DynamicModule[] = [
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => ({
       type: 'postgres',
-      host: configService.get<string>('DATABASE_HOST'),
+      host: 'postgreSQL',
       port: configService.get<number>('DATABASE_PORT'),
       username: configService.get<string>('DATABASE_USERNAME'),
       password: configService.get<string>('DATABASE_PASSWORD'),

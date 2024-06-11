@@ -5,6 +5,8 @@ import { UsersService } from './users.service'
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
 
+import type { Request } from 'express'
+
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

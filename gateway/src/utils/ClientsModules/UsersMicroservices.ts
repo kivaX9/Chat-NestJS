@@ -10,8 +10,8 @@ export const UsersMicroservice: DynamicModule = ClientsModule.register([
     name: 'CHAT-USERS',
     transport: Transport.TCP,
     options: {
-      host: configService.get<string>('USERS_HOST') ?? 'localhost',
-      port: configService.get<number>('USERS_PORT') ?? 3001,
+      host: configService.get<string>('USERS_HOST'),
+      port: configService.get<number>('USERS_PORT'),
     },
   },
 ])

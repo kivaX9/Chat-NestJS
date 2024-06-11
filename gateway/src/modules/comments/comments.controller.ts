@@ -12,6 +12,8 @@ import {
 
 import { CommentsService } from './comments.service'
 
+import type { Request } from 'express'
+
 @Controller('api/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}

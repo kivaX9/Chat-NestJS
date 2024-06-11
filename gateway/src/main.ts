@@ -10,7 +10,7 @@ async function bootstrap() {
   // Настройка корс
   app.enableCors({
     origin: configService.get<string>('FRONTEND_DOMAIN'),
-    methods: 'GET,PUT,POST,DELETE',
+    methods: '*',
   })
 
   await app.listen(3000)
