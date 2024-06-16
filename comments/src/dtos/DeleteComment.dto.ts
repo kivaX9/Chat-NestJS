@@ -1,8 +1,7 @@
 import { UserRole } from 'src/types/enums/UserRole.enum'
 
-export default class UpdateCommentDTO {
+export default class DeleteCommentDTO {
   id: string
   userId: string
   role: UserRole
-  text: string
 }

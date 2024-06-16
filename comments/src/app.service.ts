@@ -7,8 +7,11 @@ import { Comment } from 'src/typeorm/entities/Comment.entity'
 
 import CreateResponse from './utils/CreateResponses'
 
+import { UserRole } from './types/enums/UserRole.enum'
+
 import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
+import DeleteCommentDTO from './dtos/DeleteComment.dto'
 
 @Injectable()
 export class AppService {
@@ -47,7 +50,14 @@ export class AppService {
   }
 
   async updateComment(updateCommentDto: UpdateCommentDTO) {
-    const { id, text } = updateCommentDto
+    const { id, userId, role, text } = updateCommentDto
+    const comment = await this.commentsRepository.findOneBy({ id })
+
+    // Проверка на наличие такого комментария
+    // Если не АДМИН, то ->
+    // Проверка на принадлежность пользователю
+    if (!comment || (comment.userId !== userId && role !== UserRole.ADMIN))
+      return this.createResponse.badRequest('No such comment')
 
     // Обновление комментария
     const updateComment = await this.commentsRepository.update({ id }, { text })
@@ -56,11 +66,15 @@ export class AppService {
     if (updateComment) return this.createResponse.ok('Comment update')
   }
 
-  async deleteComment(id: string) {
+  async deleteComment(deleteCommentDto: DeleteCommentDTO) {
+    const { id, userId, role } = deleteCommentDto
     const comment = await this.commentsRepository.findOneBy({ id })
 
     // Проверка на наличие такого комментария
-    if (!comment) return this.createResponse.badRequest('No such comment')
+    // Если не АДМИН, то ->
+    // Проверка на принадлежность пользователю
+    if (!comment || (comment.userId !== userId && role !== UserRole.ADMIN))
+      return this.createResponse.badRequest('No such comment')
 
     // Удаление комментария
     const DeleteResult = await this.commentsRepository.delete(id)

@@ -6,6 +6,7 @@ import { AppService } from './app.service'
 
 import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
+import DeleteCommentDTO from './dtos/DeleteComment.dto'
 
 @Controller()
 export class AppController {
@@ -32,7 +33,7 @@ export class AppController {
   }
 
   @MessagePattern({ cmd: 'DELETE_COMMENT' })
-  deleteComment(@Payload() id: string) {
-    return this.appService.deleteComment(id)
+  deleteComment(@Payload() deleteCommentDto: DeleteCommentDTO) {
+    return this.appService.deleteComment(deleteCommentDto)
   }
 }

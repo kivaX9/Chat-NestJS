@@ -38,27 +38,28 @@ export class CommentsController {
   @CommentsCurrentDecorators('Получить все комментарии текущего пользователя')
   @Get('current')
   getAllMyComments(@Req() request: Request) {
-    const { user } = request['user']
-    return this.commentsService.getAllMyComments(user.id)
+    return this.commentsService.getAllMyComments(request)
   }
 
   @CommentsAddDecorators('Добавить комментарий')
   @Post('add')
   addComment(@Req() request: Request, @Body() comment: AddCommentDTO) {
-    const { user } = request['user']
-    return this.commentsService.addComment(user.id, comment.text)
+    return this.commentsService.addComment(request, comment.text)
   }
 
   @CommentsUpdateDecorators('Изменить комментарий')
   @Put('update/:id')
-  updateComment(@Param('id') id: string, @Body() comment: AddCommentDTO) {
-    return this.commentsService.updateComment(id, comment.text)
+  updateComment(
+    @Req() request: Request,
+    @Param('id') id: string,
+    @Body() comment: AddCommentDTO,
+  ) {
+    return this.commentsService.updateComment(id, comment.text, request)
   }
 
   @CommentsDeleteDecorators('Удалить комментарий')
   @Delete('delete/:id')
-  deleteComment(@Param('id') id: string) {
-    console.log(id)
-    return this.commentsService.deleteComment(id)
+  deleteComment(@Req() request: Request, @Param('id') id: string) {
+    return this.commentsService.deleteComment(id, request)
   }
 }
