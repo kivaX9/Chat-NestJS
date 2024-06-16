@@ -1,39 +1,41 @@
+import { Request } from 'express'
 import {
-  Inject,
   Injectable,
-  NestMiddleware,
+  CanActivate,
+  ExecutionContext,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+
 import { JwtService } from '@nestjs/jwt'
 
-import { NextFunction, Request, Response } from 'express'
+import { ConfigService } from '@nestjs/config'
+
+// AuthGuard - это guard, который проверяет авторизацию пользователя
 
 @Injectable()
-export class TokenMiddleware implements NestMiddleware {
+export class AuthGuard implements CanActivate {
   constructor(
     @Inject(JwtService) private jwtService: JwtService,
     @Inject(ConfigService) private configService: ConfigService,
   ) {}
 
-  async use(req: Request, res: Response, next: NextFunction) {
-    // Получил токен из headers
-    const token = this.extractTokenFromHeader(req)
-
-    //  Проверил на наличие токена
-    if (!token) {
-      return new UnauthorizedException()
-    }
-
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
+      // Получил запрос
+      const request = context.switchToHttp().getRequest<Request>()
+
+      // Получил токен из headers
+      const token = this.extractTokenFromHeader(request)
+
       // Проверка Jwt
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       })
 
       // Добавил декодированный payload токена в объект запроса
-      req['user'] = payload
-      next()
+      request['user'] = payload
+      return true
     } catch (err) {
       throw new UnauthorizedException()
     }

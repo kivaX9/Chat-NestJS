@@ -1,4 +1,5 @@
 import { Controller } from '@nestjs/common'
+
 import { MessagePattern, Payload } from '@nestjs/microservices'
 
 import { AppService } from './app.service'
@@ -10,9 +11,14 @@ import UpdateCommentDTO from './dtos/UpdateComment.dto'
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern({ cmd: 'GET_COMMENTS_USER' })
+  @MessagePattern({ cmd: 'GET_COMMENTS_ALL' })
   getAllComments(@Payload() userId: string) {
     return this.appService.getAllComments(userId)
+  }
+
+  @MessagePattern({ cmd: 'GET_COMMENTS_USER' })
+  getAllMyComments(@Payload() userId: string) {
+    return this.appService.getAllMyComments(userId)
   }
 
   @MessagePattern({ cmd: 'ADD_COMMENT' })
@@ -26,7 +32,7 @@ export class AppController {
   }
 
   @MessagePattern({ cmd: 'DELETE_COMMENT' })
-  deleteComment(@Payload() id: number) {
+  deleteComment(@Payload() id: string) {
     return this.appService.deleteComment(id)
   }
 }

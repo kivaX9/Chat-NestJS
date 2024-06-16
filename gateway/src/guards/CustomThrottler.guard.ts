@@ -1,5 +1,9 @@
 import { Injectable, ExecutionContext } from '@nestjs/common'
+
 import { ThrottlerGuard } from '@nestjs/throttler'
+
+// CustomThrottlerGuard - это кастомный ThrottlerGuard,
+// который устанавливает ограничение частоты запросов
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
@@ -16,6 +20,3 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     return super.canActivate(context)
   }
 }
-
-// CustomThrottlerGuard - это кастомный ThrottlerGuard,
-// который устанавливает ограничение частоты запросов

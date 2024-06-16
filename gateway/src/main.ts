@@ -1,10 +1,14 @@
 import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { ConfigService } from '@nestjs/config'
+import { AppModule } from './app.module'
+
+const configService = new ConfigService()
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
+  // Настройка swagger
   const config = new DocumentBuilder()
     .setTitle('Chat-NestJS')
     .setDescription('Мини-приложение "чат" на NestJS')
@@ -18,13 +22,18 @@ async function bootstrap() {
       'access-token',
     )
     .build()
-
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     },
-    customSiteTitle: 'Chat-NestJS API Docs',
+    customSiteTitle: 'Chat-NestJS API',
+  })
+
+  // Настройка корс
+  app.enableCors({
+    origin: configService.get<string>('FRONTEND_DOMAIN'),
+    methods: '*',
   })
 
   await app.listen(3000)

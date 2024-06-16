@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, OnModuleInit } from '@nestjs/common'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -13,4 +13,10 @@ import CreateResponse from './utils/CreateResponse'
   controllers: [AppController],
   providers: [AppService, CreateResponse],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly usersService: AppService) {}
+
+  async onModuleInit() {
+    await this.usersService.createAdminUser()
+  }
+}

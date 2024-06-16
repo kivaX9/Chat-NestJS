@@ -1,14 +1,19 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+
 import { JwtService } from '@nestjs/jwt'
+
 import { ConfigService } from '@nestjs/config'
+
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 
 import * as bcrypt from 'bcrypt'
 
 import { User } from './typeorm/entities/User.entity'
-import { Repository } from 'typeorm'
 
 import CreateResponse from './utils/CreateResponse'
+
+import { UserRole } from './types/enums/UserRole.enum'
 
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
@@ -22,6 +27,37 @@ export class AppService {
     @Inject(CreateResponse) private createResponse: CreateResponse,
   ) {}
 
+  // Создание админа
+  async createAdminUser() {
+    // Проверка на наличие админа
+    const adminUser = await this.userRepository.findOne({
+      where: { role: UserRole.ADMIN },
+    })
+
+    if (!adminUser) {
+      // Логин, почта и пароль для админа
+      const username = this.configService.get<string>('ADMIN_USERNAME')
+      const email = this.configService.get<string>('ADMIN_EMAIL')
+      const password = this.configService.get<string>('ADMIN_PASSWORD')
+
+      // Хеширование пароля
+      const saltOrRounds = 10
+      const hash = await bcrypt.hash(password, saltOrRounds)
+
+      // Создание админа
+      const newAdmin = this.userRepository.create({
+        username,
+        email,
+        password: hash,
+        role: UserRole.ADMIN,
+      })
+
+      // Сохранение админа
+      await this.userRepository.save(newAdmin)
+    }
+  }
+
+  // Регистрация пользователя
   async registerUser(registerUserDto: RegisterUserDTO) {
     const { username, password, email } = registerUserDto
 
@@ -50,9 +86,13 @@ export class AppService {
     if (savedUser) return this.createResponse.create('User created')
   }
 
+  // Авторизация пользователя
   async loginUser(loginUserDto: LoginUserDTO) {
     const { username, password } = loginUserDto
     const user = await this.userRepository.findOneBy({ username })
+
+    // Проверка сущетсвует ли пользователь с таким логином
+    if (!user) return new UnauthorizedException()
 
     // Проверка пароля
     const { password: passwordHash, ...userWithoutPassword } = user

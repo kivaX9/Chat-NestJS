@@ -5,10 +5,10 @@ import { Repository } from 'typeorm'
 
 import { Comment } from 'src/typeorm/entities/Comment.entity'
 
+import CreateResponse from './utils/CreateResponses'
+
 import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
-
-import CreateResponse from './utils/CreateResponses'
 
 @Injectable()
 export class AppService {
@@ -18,6 +18,14 @@ export class AppService {
   ) {}
 
   async getAllComments(userId: string) {
+    // Получение всех комментариев user
+    const comments = await this.commentsRepository.findBy({ userId })
+
+    //  Ответ
+    return comments
+  }
+
+  async getAllMyComments(userId: string) {
     // Получение всех комментариев user
     const comments = await this.commentsRepository.findBy({ userId })
 
@@ -48,11 +56,16 @@ export class AppService {
     if (updateComment) return this.createResponse.ok('Comment update')
   }
 
-  async deleteComment(id: number) {
+  async deleteComment(id: string) {
+    const comment = await this.commentsRepository.findOneBy({ id })
+
+    // Проверка на наличие такого комментария
+    if (!comment) return this.createResponse.badRequest('No such comment')
+
     // Удаление комментария
-    const deleteComment = await this.commentsRepository.delete(id)
+    const DeleteResult = await this.commentsRepository.delete(id)
 
     //  Ответ
-    if (deleteComment) return this.createResponse.ok('Comment delete')
+    if (DeleteResult) return this.createResponse.ok('Comment delete')
   }
 }
