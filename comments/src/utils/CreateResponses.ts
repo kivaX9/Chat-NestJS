@@ -1,15 +1,11 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
 
 export default class CreateResponse {
-  ok(message: string) {
+  ok(message: string): HttpException {
     return new HttpException(message, HttpStatus.OK)
   }
 
-  create(message: string) {
-    return new HttpException(message, HttpStatus.CREATED)
-  }
-
-  badRequest(message: string) {
+  badRequest(message: string): HttpException {
     return new HttpException(message, HttpStatus.BAD_REQUEST)
   }
 }

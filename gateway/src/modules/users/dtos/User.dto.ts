@@ -13,4 +13,7 @@ export default class UserDTO {
 
   @ApiProperty({ example: 'USER', description: 'Роль' })
   role: UserRole
+
+  @ApiProperty({ example: '00', description: 'Жетон' })
+  token?: string
 }

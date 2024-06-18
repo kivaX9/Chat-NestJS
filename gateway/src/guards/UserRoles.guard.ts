@@ -8,40 +8,55 @@ import {
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 
-import { UserRoles } from 'src/decorators/userRole.decorator'
-
 import { UserRole } from 'src/types/enums/UserRole.enum'
 
 import UserDTO from 'src/modules/users/dtos/User.dto'
 
 // UserRolesGuard - это guard, который проверяет роль пользователя
-// для доступа к текущему запросу
+// для доступа к текущему запросу, по умолчанию стоит мод default
+// Мод "args" сначала проверяет передали параметр или нет, а потом роль
+// Мод "default" проверят только роль
 
 @Injectable()
 export class UserRolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    // Проверка на наличие декоратора UserRoles
-    const requiredRoles = this.reflector.get<UserRole[]>(
-      UserRoles,
-      context.getHandler(),
-    )
-    if (!requiredRoles) return true
+    const rolesMeta = this.reflector.get<{
+      roles: UserRole[]
+      mode: 'args' | 'default'
+    }>('roles', context.getHandler())
+
+    // Если роли не переданы, то проверка не требуется
+    if (!rolesMeta) return true
+
+    const { roles, mode } = rolesMeta
 
     //  Получение user из запроса
     const request = context.switchToHttp().getRequest<Request>()
     const user: UserDTO = request['user'].user
 
-    // Проверка на соответсвие текущей роли у пользователя
-    const isMatchRoles = Boolean(
-      requiredRoles.find((role) => user.role == role),
-    )
+    // Получение параметров
+    const params = request.params
+    const query = request.query
+    const hasArgs =
+      Object.keys(params).some((key) => params[key] !== undefined) ||
+      Object.keys(query).some((key) => query[key] !== undefined)
 
-    if (isMatchRoles) {
-      return true
+    // Проверка на соответствие роли у пользователя
+    const isMatchRoles = (): boolean => {
+      const isAccess = Boolean(roles.find((role) => user.role == role))
+
+      if (isAccess) {
+        return true
+      } else
+        throw new HttpException('У вас нет прав доступа', HttpStatus.FORBIDDEN)
     }
 
-    throw new HttpException('У вас нет прав доступа', HttpStatus.FORBIDDEN)
+    // Проверка на мод и роль
+    if (mode === 'args') {
+      return hasArgs ? isMatchRoles() : true
+    }
+    return isMatchRoles()
   }
 }

@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common'
+import { Controller, HttpException } from '@nestjs/common'
 
 import { MessagePattern, Payload } from '@nestjs/microservices'
 
@@ -7,33 +7,35 @@ import { AppService } from './app.service'
 import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
 import DeleteCommentDTO from './dtos/DeleteComment.dto'
+import { CommentDTO } from './dtos/Comment.dto'
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern({ cmd: 'GET_COMMENTS_ALL' })
-  getAllComments(@Payload() userId: string) {
+  @MessagePattern({ cmd: 'GET_COMMENTS_USER' })
+  getAllComments(@Payload() userId: string): Promise<CommentDTO[] | Error> {
     return this.appService.getAllComments(userId)
   }
 
-  @MessagePattern({ cmd: 'GET_COMMENTS_USER' })
-  getAllMyComments(@Payload() userId: string) {
-    return this.appService.getAllMyComments(userId)
-  }
-
   @MessagePattern({ cmd: 'ADD_COMMENT' })
-  addComment(@Payload() addCommentDto: AddCommentDTO) {
+  addComment(
+    @Payload() addCommentDto: AddCommentDTO,
+  ): Promise<CommentDTO | Error> {
     return this.appService.addComment(addCommentDto)
   }
 
   @MessagePattern({ cmd: 'UPDATE_COMMENT' })
-  updateComment(@Payload() updateCommentDto: UpdateCommentDTO) {
+  updateComment(
+    @Payload() updateCommentDto: UpdateCommentDTO,
+  ): Promise<HttpException | Error> {
     return this.appService.updateComment(updateCommentDto)
   }
 
   @MessagePattern({ cmd: 'DELETE_COMMENT' })
-  deleteComment(@Payload() deleteCommentDto: DeleteCommentDTO) {
+  deleteComment(
+    @Payload() deleteCommentDto: DeleteCommentDTO,
+  ): Promise<HttpException | Error> {
     return this.appService.deleteComment(deleteCommentDto)
   }
 }

@@ -16,7 +16,7 @@ import CreateResponse from './utils/CreateResponse'
 export class AppModule implements OnModuleInit {
   constructor(private readonly usersService: AppService) {}
 
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     await this.usersService.createAdminUser()
   }
 }

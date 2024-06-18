@@ -1,39 +1,51 @@
 import type { Request } from 'express'
-import { Body, Controller, Get, Post, Req } from '@nestjs/common'
+import { Observable } from 'rxjs'
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common'
 
 import { UsersService } from './users.service'
 
-import {
-  UsersCurrentDecorators,
-  UsersDecorators,
-  UsersLoginDecorators,
-  UsersRegisterDecorators,
-} from 'src/decorators/users.decorator'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+
+import { AuthGuard } from 'src/guards/Auth.guard'
 
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
+import UserDTO from './dtos/User.dto'
 
-@UsersDecorators('Пользователи')
+@ApiTags('Пользователи')
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UsersCurrentDecorators('Получить текущего пользователя')
+  @ApiOperation({ summary: 'Получить текущего пользователя' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
   @Get('current')
-  getCurrentUser(@Req() request: Request) {
-    const jwtPayload = request['user']
-    return this.usersService.getCurrentUser(jwtPayload)
+  getCurrentUser(@Req() request: Request): UserDTO | Error {
+    return this.usersService.getCurrentUser(request)
   }
 
-  @UsersRegisterDecorators('Зарегистрировать пользователя')
+  @ApiOperation({ summary: 'Зарегистрировать пользователя' })
+  @ApiBody({ type: RegisterUserDTO })
   @Post('register')
-  registerUser(@Body() registerUserDto: RegisterUserDTO) {
+  registerUser(
+    @Body() registerUserDto: RegisterUserDTO,
+  ): Observable<HttpException | Error> {
     return this.usersService.registerUser(registerUserDto)
   }
 
-  @UsersLoginDecorators('Авторизировать пользователя')
+  @ApiOperation({ summary: 'Авторизировать пользователя' })
+  @ApiBody({ type: LoginUserDTO })
   @Post('login')
-  loginUser(@Body() loginUserDto: LoginUserDTO) {
+  loginUser(@Body() loginUserDto: LoginUserDTO): Observable<UserDTO | Error> {
     return this.usersService.loginUser(loginUserDto)
   }
 }

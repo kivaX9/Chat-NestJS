@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { HttpException, Inject, Injectable } from '@nestjs/common'
 
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -12,6 +12,7 @@ import { UserRole } from './types/enums/UserRole.enum'
 import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
 import DeleteCommentDTO from './dtos/DeleteComment.dto'
+import { CommentDTO } from './dtos/Comment.dto'
 
 @Injectable()
 export class AppService {
@@ -20,7 +21,7 @@ export class AppService {
     @Inject(CreateResponse) private createResponse: CreateResponse,
   ) {}
 
-  async getAllComments(userId: string) {
+  async getAllComments(userId: string): Promise<CommentDTO[] | Error> {
     // Получение всех комментариев user
     const comments = await this.commentsRepository.findBy({ userId })
 
@@ -28,15 +29,7 @@ export class AppService {
     return comments
   }
 
-  async getAllMyComments(userId: string) {
-    // Получение всех комментариев user
-    const comments = await this.commentsRepository.findBy({ userId })
-
-    //  Ответ
-    return comments
-  }
-
-  async addComment(addCommentDto: AddCommentDTO) {
+  async addComment(addCommentDto: AddCommentDTO): Promise<CommentDTO | Error> {
     const { userId, text } = addCommentDto
 
     //  Создание комментария
@@ -46,10 +39,12 @@ export class AppService {
     const savedComment = await this.commentsRepository.save(newComment)
 
     //  Ответ
-    if (savedComment) return this.createResponse.create('Comment created')
+    return savedComment
   }
 
-  async updateComment(updateCommentDto: UpdateCommentDTO) {
+  async updateComment(
+    updateCommentDto: UpdateCommentDTO,
+  ): Promise<HttpException | Error> {
     const { id, userId, role, text } = updateCommentDto
     const comment = await this.commentsRepository.findOneBy({ id })
 
@@ -66,7 +61,9 @@ export class AppService {
     if (updateComment) return this.createResponse.ok('Comment update')
   }
 
-  async deleteComment(deleteCommentDto: DeleteCommentDTO) {
+  async deleteComment(
+    deleteCommentDto: DeleteCommentDTO,
+  ): Promise<HttpException | Error> {
     const { id, userId, role } = deleteCommentDto
     const comment = await this.commentsRepository.findOneBy({ id })
 

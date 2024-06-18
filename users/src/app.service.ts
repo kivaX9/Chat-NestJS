@@ -1,4 +1,9 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 
 import { JwtService } from '@nestjs/jwt'
 
@@ -17,6 +22,7 @@ import { UserRole } from './types/enums/UserRole.enum'
 
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
+import { UserDTO } from './dtos/User.dto'
 
 @Injectable()
 export class AppService {
@@ -28,7 +34,7 @@ export class AppService {
   ) {}
 
   // Создание админа
-  async createAdminUser() {
+  async createAdminUser(): Promise<void> {
     // Проверка на наличие админа
     const adminUser = await this.userRepository.findOne({
       where: { role: UserRole.ADMIN },
@@ -58,7 +64,9 @@ export class AppService {
   }
 
   // Регистрация пользователя
-  async registerUser(registerUserDto: RegisterUserDTO) {
+  async registerUser(
+    registerUserDto: RegisterUserDTO,
+  ): Promise<HttpException | Error> {
     const { username, password, email } = registerUserDto
 
     // Проверка наличия пользователя с таким же ником и почтой
@@ -87,7 +95,7 @@ export class AppService {
   }
 
   // Авторизация пользователя
-  async loginUser(loginUserDto: LoginUserDTO) {
+  async loginUser(loginUserDto: LoginUserDTO): Promise<UserDTO | Error> {
     const { username, password } = loginUserDto
     const user = await this.userRepository.findOneBy({ username })
 
@@ -109,8 +117,7 @@ export class AppService {
 
     // Ответ
     return {
-      ...user,
-      password: undefined,
+      ...userWithoutPassword,
       token,
     }
   }

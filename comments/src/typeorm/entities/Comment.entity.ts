@@ -13,7 +13,7 @@ export class Comment {
   text: string
 
   @BeforeInsert()
-  generateId() {
+  generateId(): void {
     this.id = uuidv4()
   }
 }

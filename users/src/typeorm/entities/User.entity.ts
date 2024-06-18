@@ -21,7 +21,7 @@ export class User {
   role: UserRole
 
   @BeforeInsert()
-  generateId() {
+  generateId(): void {
     this.id = uuidv4()
   }
 }
