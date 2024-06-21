@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -13,6 +13,7 @@ import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
 import DeleteCommentDTO from './dtos/DeleteComment.dto'
 import { CommentDTO } from './dtos/Comment.dto'
+import HttpResponse from './types/HttpResponse'
 
 @Injectable()
 export class AppService {
@@ -44,7 +45,7 @@ export class AppService {
 
   async updateComment(
     updateCommentDto: UpdateCommentDTO,
-  ): Promise<HttpException | Error> {
+  ): Promise<HttpResponse | Error> {
     const { id, userId, role, text } = updateCommentDto
     const comment = await this.commentsRepository.findOneBy({ id })
 
@@ -63,7 +64,7 @@ export class AppService {
 
   async deleteComment(
     deleteCommentDto: DeleteCommentDTO,
-  ): Promise<HttpException | Error> {
+  ): Promise<HttpResponse | Error> {
     const { id, userId, role } = deleteCommentDto
     const comment = await this.commentsRepository.findOneBy({ id })
 

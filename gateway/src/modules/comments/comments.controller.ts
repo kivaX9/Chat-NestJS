@@ -10,7 +10,6 @@ import {
   Delete,
   Req,
   UseGuards,
-  HttpException,
   Query,
 } from '@nestjs/common'
 
@@ -34,6 +33,8 @@ import { UserRole } from 'src/types/enums/UserRole.enum'
 
 import AddCommentDTO from './dtos/AddComment.dto'
 import CommentDTO from './dtos/Comment.dto'
+import HttpResponse from 'src/types/HttpResponse'
+import UpdateCommentDTO from './dtos/UpdateComment.dto'
 
 @ApiTags('Комментарии')
 @ApiBearerAuth('access-token')
@@ -43,6 +44,7 @@ export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @ApiOperation({ summary: 'Получить все комментарии пользователя' })
+  @ApiBody({ type: CommentDTO, description: 'Комментарий' })
   @ApiQuery({
     name: 'userId',
     description: 'Идентификатор пользователя',
@@ -58,7 +60,7 @@ export class CommentsController {
   }
 
   @ApiOperation({ summary: 'Добавить комментарий' })
-  @ApiBody({ type: AddCommentDTO, description: 'Текст комментария' })
+  @ApiBody({ type: AddCommentDTO, description: 'Добавление комментария' })
   @Post('add')
   addComment(
     @Req() request: Request,
@@ -68,14 +70,14 @@ export class CommentsController {
   }
 
   @ApiOperation({ summary: 'Изменить комментарий' })
+  @ApiBody({ type: UpdateCommentDTO, description: 'Обновление комментария' })
   @ApiParam({ name: 'id', description: 'Идентификатор комментария' })
-  @ApiBody({ type: AddCommentDTO, description: 'Updated comment text' })
   @Put('update/:id')
   updateComment(
     @Req() request: Request,
     @Param('id') id: string,
-    @Body() comment: AddCommentDTO,
-  ): Observable<HttpException | Error> {
+    @Body() comment: UpdateCommentDTO,
+  ): Observable<HttpResponse | Error> {
     return this.commentsService.updateComment(id, comment.text, request)
   }
 
@@ -85,7 +87,7 @@ export class CommentsController {
   deleteComment(
     @Req() request: Request,
     @Param('id') id: string,
-  ): Observable<HttpException | Error> {
+  ): Observable<HttpResponse | Error> {
     return this.commentsService.deleteComment(id, request)
   }
 }

@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common'
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 
 import { JwtService } from '@nestjs/jwt'
 
@@ -23,6 +18,7 @@ import { UserRole } from './types/enums/UserRole.enum'
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import LoginUserDTO from './dtos/LoginUser.dto'
 import { UserDTO } from './dtos/User.dto'
+import HttpResponse from './types/HttpResponse'
 
 @Injectable()
 export class AppService {
@@ -66,15 +62,24 @@ export class AppService {
   // Регистрация пользователя
   async registerUser(
     registerUserDto: RegisterUserDTO,
-  ): Promise<HttpException | Error> {
+  ): Promise<HttpResponse | Error> {
     const { username, password, email } = registerUserDto
 
-    // Проверка наличия пользователя с таким же ником и почтой
-    const existingUser = await this.userRepository.findOne({
-      where: [{ username }, { email }],
+    // Проверка наличия пользователя с таким же ником
+    const existingUserUsername = await this.userRepository.findOne({
+      where: { username },
     })
-    if (existingUser)
-      return this.createResponse.badRequest('Such a user exists')
+    if (existingUserUsername)
+      return this.createResponse.badRequest(
+        'A user with username already exists',
+      )
+
+    // Проверка наличия пользователя с такой же почтой
+    const existingUserEmail = await this.userRepository.findOne({
+      where: { email },
+    })
+    if (existingUserEmail)
+      return this.createResponse.badRequest('A user with email already exists')
 
     // Хеширование пароля
     const saltOrRounds = 10

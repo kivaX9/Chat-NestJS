@@ -16,6 +16,7 @@ async function bootstrap(): Promise<void> {
       },
     },
   )
+
   app.listen()
 }
 bootstrap()

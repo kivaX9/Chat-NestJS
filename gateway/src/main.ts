@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { ConfigService } from '@nestjs/config'
 import { AppModule } from './app.module'
+import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common'
+import CreateHttpResponse from './utils/CreateHttpResponse'
 
 const configService = new ConfigService()
 
@@ -35,6 +37,24 @@ async function bootstrap(): Promise<void> {
     origin: configService.get<string>('FRONTEND_DOMAIN'),
     methods: '*',
   })
+
+  // Настройка валидации
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // Ошибка, если объект содержит свойства, не определённые в DTO
+      forbidNonWhitelisted: true,
+      // Преобразует входные данные в типы, определенные в DTO
+      transform: true,
+      // Автоматически возвращает ошибки валидации с кодом 400
+      exceptionFactory: (errors): HttpException => {
+        const message = errors
+          .map(({ constraints }) => constraints)
+          .flatMap((obj) => Object.values(obj))
+          .join(', ')
+        return new CreateHttpResponse(message, HttpStatus.BAD_REQUEST)
+      },
+    }),
+  )
 
   await app.listen(3000)
 }

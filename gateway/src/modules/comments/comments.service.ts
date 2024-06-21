@@ -1,10 +1,11 @@
 import type { Request } from 'express'
 import { Observable } from 'rxjs'
-import { HttpException, Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 
 import UserDTO from '../users/dtos/User.dto'
 import CommentDTO from './dtos/Comment.dto'
+import HttpResponse from 'src/types/HttpResponse'
 
 @Injectable()
 export class CommentsService {
@@ -32,7 +33,7 @@ export class CommentsService {
     id: string,
     text: string,
     request: Request,
-  ): Observable<HttpException | Error> {
+  ): Observable<HttpResponse | Error> {
     const { id: userId, role } = request['user'].user as UserDTO
 
     return this.CommentsUsers.send(
@@ -45,7 +46,7 @@ export class CommentsService {
   deleteComment(
     id: string,
     request: Request,
-  ): Observable<HttpException | Error> {
+  ): Observable<HttpResponse | Error> {
     const { id: userId, role } = request['user'].user as UserDTO
     return this.CommentsUsers.send(
       { cmd: 'DELETE_COMMENT' },

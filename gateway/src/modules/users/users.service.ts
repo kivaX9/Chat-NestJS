@@ -1,12 +1,13 @@
 import type { Request } from 'express'
 import { Observable } from 'rxjs'
-import { HttpException, Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 
 import LoginUserDTO from './dtos/LoginUser.dto'
 import RegisterUserDTO from './dtos/RegisterUser.dto'
 import JwtPayloadDTO from './dtos/JwtPayload.dto'
 import UserDTO from './dtos/User.dto'
+import HttpResponse from 'src/types/HttpResponse'
 
 @Injectable()
 export class UsersService {
@@ -21,7 +22,7 @@ export class UsersService {
   // Зарегистрировать пользователя
   registerUser(
     registerUserDto: RegisterUserDTO,
-  ): Observable<HttpException | Error> {
+  ): Observable<HttpResponse | Error> {
     return this.ChatUsers.send({ cmd: 'REGISTER_USER' }, registerUserDto)
   }
 

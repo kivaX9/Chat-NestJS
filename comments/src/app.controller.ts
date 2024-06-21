@@ -1,4 +1,4 @@
-import { Controller, HttpException } from '@nestjs/common'
+import { Controller } from '@nestjs/common'
 
 import { MessagePattern, Payload } from '@nestjs/microservices'
 
@@ -8,6 +8,7 @@ import AddCommentDTO from './dtos/AddComment.dto'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
 import DeleteCommentDTO from './dtos/DeleteComment.dto'
 import { CommentDTO } from './dtos/Comment.dto'
+import HttpResponse from './types/HttpResponse'
 
 @Controller()
 export class AppController {
@@ -28,14 +29,14 @@ export class AppController {
   @MessagePattern({ cmd: 'UPDATE_COMMENT' })
   updateComment(
     @Payload() updateCommentDto: UpdateCommentDTO,
-  ): Promise<HttpException | Error> {
+  ): Promise<HttpResponse | Error> {
     return this.appService.updateComment(updateCommentDto)
   }
 
   @MessagePattern({ cmd: 'DELETE_COMMENT' })
   deleteComment(
     @Payload() deleteCommentDto: DeleteCommentDTO,
-  ): Promise<HttpException | Error> {
+  ): Promise<HttpResponse | Error> {
     return this.appService.deleteComment(deleteCommentDto)
   }
 }
