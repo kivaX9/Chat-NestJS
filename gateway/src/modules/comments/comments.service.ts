@@ -23,8 +23,8 @@ export class CommentsService {
   }
 
   // Добавить комментарий
-  addComment(request: Request, text: string): Observable<CommentDTO | Error> {
-    const { id: userId } = request['user'].user as UserDTO
+  addComment(jwtUser: UserDTO, text: string): Observable<CommentDTO | Error> {
+    const { id: userId } = jwtUser
     return this.CommentsUsers.send({ cmd: 'ADD_COMMENT' }, { userId, text })
   }
 
@@ -32,9 +32,9 @@ export class CommentsService {
   updateComment(
     id: string,
     text: string,
-    request: Request,
+    jwtUser: UserDTO,
   ): Observable<HttpResponse | Error> {
-    const { id: userId, role } = request['user'].user as UserDTO
+    const { id: userId, role } = jwtUser
 
     return this.CommentsUsers.send(
       { cmd: 'UPDATE_COMMENT' },
@@ -45,9 +45,9 @@ export class CommentsService {
   // Удалить комментарий
   deleteComment(
     id: string,
-    request: Request,
+    jwtUser: UserDTO,
   ): Observable<HttpResponse | Error> {
-    const { id: userId, role } = request['user'].user as UserDTO
+    const { id: userId, role } = jwtUser
     return this.CommentsUsers.send(
       { cmd: 'DELETE_COMMENT' },
       { id, userId, role },

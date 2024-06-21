@@ -1,23 +1,15 @@
-import type { Request } from 'express'
 import { Observable } from 'rxjs'
 import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 
 import LoginUserDTO from './dtos/LoginUser.dto'
 import RegisterUserDTO from './dtos/RegisterUser.dto'
-import JwtPayloadDTO from './dtos/JwtPayload.dto'
 import UserDTO from './dtos/User.dto'
 import HttpResponse from 'src/types/HttpResponse'
 
 @Injectable()
 export class UsersService {
   constructor(@Inject('CHAT-USERS') private readonly ChatUsers: ClientProxy) {}
-
-  // Получить текущего пользователя
-  getCurrentUser(request: Request): UserDTO | Error {
-    const jwtPayload: JwtPayloadDTO = request['user']
-    return jwtPayload.user
-  }
 
   // Зарегистрировать пользователя
   registerUser(

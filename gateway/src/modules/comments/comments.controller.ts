@@ -23,6 +23,7 @@ import {
 } from '@nestjs/swagger'
 
 import { UserRoles } from 'src/decorators/userRole.decorator'
+import { JwtUser } from 'src/decorators/jwtUser.decorator'
 
 import { AuthGuard } from 'src/guards/Auth.guard'
 import { UserRolesGuard } from 'src/guards/UserRoles.guard'
@@ -35,6 +36,7 @@ import AddCommentDTO from './dtos/AddComment.dto'
 import CommentDTO from './dtos/Comment.dto'
 import HttpResponse from 'src/types/HttpResponse'
 import UpdateCommentDTO from './dtos/UpdateComment.dto'
+import UserDTO from '../users/dtos/User.dto'
 
 @ApiTags('Комментарии')
 @ApiBearerAuth('access-token')
@@ -44,7 +46,6 @@ export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @ApiOperation({ summary: 'Получить все комментарии пользователя' })
-  @ApiBody({ type: CommentDTO, description: 'Комментарий' })
   @ApiQuery({
     name: 'userId',
     description: 'Идентификатор пользователя',
@@ -63,10 +64,10 @@ export class CommentsController {
   @ApiBody({ type: AddCommentDTO, description: 'Добавление комментария' })
   @Post('add')
   addComment(
-    @Req() request: Request,
+    @JwtUser() jwtUser: UserDTO,
     @Body() comment: AddCommentDTO,
   ): Observable<CommentDTO | Error> {
-    return this.commentsService.addComment(request, comment.text)
+    return this.commentsService.addComment(jwtUser, comment.text)
   }
 
   @ApiOperation({ summary: 'Изменить комментарий' })
@@ -74,20 +75,20 @@ export class CommentsController {
   @ApiParam({ name: 'id', description: 'Идентификатор комментария' })
   @Put('update/:id')
   updateComment(
-    @Req() request: Request,
+    @JwtUser() jwtUser: UserDTO,
     @Param('id') id: string,
     @Body() comment: UpdateCommentDTO,
   ): Observable<HttpResponse | Error> {
-    return this.commentsService.updateComment(id, comment.text, request)
+    return this.commentsService.updateComment(id, comment.text, jwtUser)
   }
 
   @ApiOperation({ summary: 'Удалить комментарий' })
   @ApiParam({ name: 'id', description: 'Идентификатор комментария' })
   @Delete('delete/:id')
   deleteComment(
-    @Req() request: Request,
+    @JwtUser() jwtUser: UserDTO,
     @Param('id') id: string,
   ): Observable<HttpResponse | Error> {
-    return this.commentsService.deleteComment(id, request)
+    return this.commentsService.deleteComment(id, jwtUser)
   }
 }

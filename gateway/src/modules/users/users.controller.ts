@@ -1,10 +1,11 @@
-import type { Request } from 'express'
 import { Observable } from 'rxjs'
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 
 import { UsersService } from './users.service'
 
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+
+import { JwtUser } from 'src/decorators/jwtUser.decorator'
 
 import { AuthGuard } from 'src/guards/Auth.guard'
 
@@ -19,12 +20,11 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Получить текущего пользователя' })
-  @ApiBody({ type: UserDTO, description: 'Пользователь' })
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard)
   @Get('current')
-  getCurrentUser(@Req() request: Request): UserDTO | Error {
-    return this.usersService.getCurrentUser(request)
+  getCurrentUser(@JwtUser() jwtUser: UserDTO): UserDTO | Error {
+    return jwtUser
   }
 
   @ApiOperation({ summary: 'Зарегистрировать пользователя' })
