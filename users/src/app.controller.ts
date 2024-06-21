@@ -21,7 +21,9 @@ export class AppController {
   }
 
   @MessagePattern({ cmd: 'LOGIN_USER' })
-  loginUser(@Payload() loginUserDto: LoginUserDTO): Promise<UserDTO | Error> {
+  loginUser(
+    @Payload() loginUserDto: LoginUserDTO,
+  ): Promise<UserDTO | HttpResponse | Error> {
     return this.appService.loginUser(loginUserDto)
   }
 }

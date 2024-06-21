@@ -39,7 +39,9 @@ export class UsersController {
   @ApiOperation({ summary: 'Авторизировать пользователя' })
   @ApiBody({ type: LoginUserDTO, description: 'Авторизация пользователя' })
   @Post('login')
-  loginUser(@Body() loginUserDto: LoginUserDTO): Observable<UserDTO | Error> {
+  loginUser(
+    @Body() loginUserDto: LoginUserDTO,
+  ): Observable<UserDTO | HttpResponse | Error> {
     return this.usersService.loginUser(loginUserDto)
   }
 }

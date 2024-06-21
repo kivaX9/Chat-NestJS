@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 
 import { JwtService } from '@nestjs/jwt'
 
@@ -100,18 +100,21 @@ export class AppService {
   }
 
   // Авторизация пользователя
-  async loginUser(loginUserDto: LoginUserDTO): Promise<UserDTO | Error> {
+  async loginUser(
+    loginUserDto: LoginUserDTO,
+  ): Promise<UserDTO | HttpResponse | Error> {
     const { username, password } = loginUserDto
     const user = await this.userRepository.findOneBy({ username })
 
     // Проверка сущетсвует ли пользователь с таким логином
-    if (!user) return new UnauthorizedException()
+    if (!user)
+      return this.createResponse.badRequest('There is no user with this login')
 
     // Проверка пароля
     const { password: passwordHash, ...userWithoutPassword } = user
     const isComparePassword = await bcrypt.compare(password, passwordHash)
     if (!isComparePassword) {
-      return new UnauthorizedException()
+      return this.createResponse.badRequest('Wrong password')
     }
 
     // Генерация токена

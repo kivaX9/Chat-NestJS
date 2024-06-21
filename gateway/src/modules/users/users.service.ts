@@ -19,7 +19,9 @@ export class UsersService {
   }
 
   // Авторизировать пользователя
-  loginUser(loginUserDto: LoginUserDTO): Observable<UserDTO | Error> {
+  loginUser(
+    loginUserDto: LoginUserDTO,
+  ): Observable<UserDTO | HttpResponse | Error> {
     return this.ChatUsers.send({ cmd: 'LOGIN_USER' }, loginUserDto)
   }
 }
