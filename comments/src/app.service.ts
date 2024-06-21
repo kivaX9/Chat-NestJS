@@ -53,7 +53,7 @@ export class AppService {
     // Если не АДМИН, то ->
     // Проверка на принадлежность пользователю
     if (!comment || (comment.userId !== userId && role !== UserRole.ADMIN))
-      return this.createResponse.badRequest('No such comment')
+      return this.createResponse.badRequest('No access rights')
 
     // Обновление комментария
     const updateComment = await this.commentsRepository.update({ id }, { text })
@@ -72,7 +72,7 @@ export class AppService {
     // Если не АДМИН, то ->
     // Проверка на принадлежность пользователю
     if (!comment || (comment.userId !== userId && role !== UserRole.ADMIN))
-      return this.createResponse.badRequest('No such comment')
+      return this.createResponse.badRequest('No access rights')
 
     // Удаление комментария
     const DeleteResult = await this.commentsRepository.delete(id)

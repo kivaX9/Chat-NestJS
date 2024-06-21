@@ -1,4 +1,5 @@
 import type { Request } from 'express'
+import { ParsedQs } from 'qs'
 import {
   CanActivate,
   ExecutionContext,
@@ -43,19 +44,25 @@ export class UserRolesGuard implements CanActivate {
       Object.keys(params).some((key) => params[key] !== undefined) ||
       Object.keys(query).some((key) => query[key] !== undefined)
 
-    // Проверка на соответствие роли у пользователя
-    const isMatchRoles = (): boolean => {
-      const isAccess = Boolean(roles.find((role) => user.role == role))
+    // Проверка на соответствие роли у пользователя и userId
+    const isMatchRoles = (
+      userId?: string | ParsedQs | string[] | ParsedQs[],
+    ): boolean => {
+      const isAccessRole = Boolean(roles.find((role) => user.role == role))
 
-      if (isAccess) {
+      if (userId === user.id) {
+        return true
+      }
+
+      if (isAccessRole) {
         return true
       } else
         throw new HttpException('У вас нет прав доступа', HttpStatus.FORBIDDEN)
     }
 
-    // Проверка на мод и роль
+    // Проверка на мод, роль и userId
     if (mode === 'args') {
-      return hasArgs ? isMatchRoles() : true
+      return hasArgs ? isMatchRoles(query['userId']) : true
     }
     return isMatchRoles()
   }
